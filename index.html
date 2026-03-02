@@ -24,7 +24,7 @@
         .quiz-container {
             background: white;
             border-radius: 24px;
-            padding: 40px;
+            padding: 30px;
             max-width: 600px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
@@ -50,8 +50,8 @@
         }
 
         .emoji-header {
-            font-size: 48px;
-            margin-bottom: 10px;
+            font-size: 40px;
+            margin-bottom: 6px;
         }
 
         h1 {
@@ -63,14 +63,14 @@
         .subtitle {
             color: #888;
             font-size: 1.1em;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .progress-bar {
             background: #eee;
             border-radius: 20px;
-            height: 14px;
-            margin-bottom: 30px;
+            height: 12px;
+            margin-bottom: 20px;
             overflow: hidden;
         }
 
@@ -83,30 +83,30 @@
 
         .question-number {
             color: #764ba2;
-            font-size: 0.95em;
-            margin-bottom: 8px;
+            font-size: 0.9em;
+            margin-bottom: 6px;
             font-weight: bold;
         }
 
         .question {
-            font-size: 1.4em;
+            font-size: 1.3em;
             color: #333;
-            margin-bottom: 25px;
-            line-height: 1.6;
+            margin-bottom: 18px;
+            line-height: 1.5;
         }
 
         .answers {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .answer-btn {
             background: #f8f8ff;
             border: 3px solid #e0e0e0;
-            border-radius: 16px;
-            padding: 16px 20px;
-            font-size: 1.15em;
+            border-radius: 14px;
+            padding: 12px 16px;
+            font-size: 1.05em;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: inherit;
@@ -152,10 +152,10 @@
         }
 
         .feedback {
-            margin-top: 20px;
-            font-size: 1.2em;
+            margin-top: 12px;
+            font-size: 1.05em;
             font-weight: bold;
-            min-height: 40px;
+            min-height: 30px;
         }
 
         .feedback.correct {
@@ -167,13 +167,13 @@
         }
 
         .next-btn {
-            margin-top: 20px;
+            margin-top: 12px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
             border-radius: 16px;
-            padding: 14px 40px;
-            font-size: 1.15em;
+            padding: 12px 36px;
+            font-size: 1.1em;
             cursor: pointer;
             font-family: inherit;
             transition: transform 0.2s, box-shadow 0.2s;
@@ -231,7 +231,7 @@
             align-items: center;
         }
 
-        .start-btn {
+        .start-btn, .level-btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             border: none;
@@ -244,13 +244,40 @@
             margin-top: 10px;
         }
 
-        .start-btn:hover {
+        .level-btn {
+            padding: 14px 40px;
+            font-size: 1.15em;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        .level-btn.hard {
+            background: linear-gradient(135deg, #e44d26, #c0392b);
+        }
+
+        .level-btn.hard:hover {
+            box-shadow: 0 8px 25px rgba(192, 57, 43, 0.4);
+        }
+
+        .start-btn:hover, .level-btn:hover {
             transform: scale(1.08);
             box-shadow: 0 8px 25px rgba(118, 75, 162, 0.4);
         }
 
         .quiz-content {
             display: none;
+        }
+
+        .level-select {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .level-label {
+            color: #666;
+            font-size: 0.95em;
+            margin-top: 6px;
         }
 
         .star {
@@ -262,6 +289,20 @@
         .star.empty {
             opacity: 0.2;
         }
+
+        .difficulty-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-bottom: 10px;
+        }
+
+        .difficulty-badge.hard {
+            background: linear-gradient(135deg, #e44d26, #c0392b);
+        }
     </style>
 </head>
 <body>
@@ -270,14 +311,18 @@
         <div class="start-container" id="startScreen">
             <div class="emoji-header">🎭🤡👑</div>
             <h1>חידון פורים</h1>
-            <p class="subtitle">10 שאלות על חג הפורים - בואו נראה כמה אתם יודעים!</p>
-            <button class="start-btn" onclick="startQuiz()">!יאללה, מתחילים</button>
+            <p class="subtitle">בחרו רמת קושי ובואו נראה כמה אתם יודעים!</p>
+            <button class="level-btn" onclick="startQuiz('easy')">🌟 רמה רגילה</button>
+            <span class="level-label">10 שאלות בסיסיות על פורים</span>
+            <button class="level-btn hard" onclick="startQuiz('hard')">🔥 רמה מתקדמת</button>
+            <span class="level-label">10 שאלות למומחי פורים!</span>
             <a href="memory.html" style="display:block; margin-top:18px; color:#764ba2; font-size:1.1em; text-decoration:none;">🃏 למשחק הזיכרון ←</a>
         </div>
 
         <!-- Quiz Content -->
         <div class="quiz-content" id="quizContent">
             <div class="emoji-header" id="questionEmoji">🎭</div>
+            <div id="difficultyBadge" class="difficulty-badge"></div>
             <div class="progress-bar">
                 <div class="progress-fill" id="progressFill" style="width: 0%"></div>
             </div>
@@ -296,11 +341,12 @@
             <div class="result-message" id="resultMessage"></div>
             <button class="restart-btn" onclick="restartQuiz()">🔄 שחקו שוב</button>
             <a href="memory.html" style="display:block; margin-top:18px; color:#764ba2; font-size:1.1em; text-decoration:none;">🃏 למשחק הזיכרון ←</a>
+            <a href="slideshow.html" style="display:block; margin-top:12px; color:#764ba2; font-size:1.1em; text-decoration:none;">🎬 לתצוגת התחפושות ←</a>
         </div>
     </div>
 
     <script>
-        const questions = [
+        const easyQuestions = [
             {
                 question: "מי היתה המלכה שסירבה לבוא למשתה המלך?",
                 answers: ["אסתר", "ושתי", "מרים", "רות"],
@@ -373,24 +419,111 @@
             }
         ];
 
+        const hardQuestions = [
+            {
+                question: "על כמה מדינות מלך אחשוורוש?",
+                answers: ["50 מדינות", "100 מדינות", "127 מדינות", "150 מדינות"],
+                correct: 2,
+                emoji: "🌍",
+                funFact: "מהודו ועד כוש - 127 מדינות! זו היתה אימפריה ענקית"
+            },
+            {
+                question: "כמה ימים נמשך המשתה הראשון של אחשוורוש?",
+                answers: ["7 ימים", "30 יום", "180 יום", "365 יום"],
+                correct: 2,
+                emoji: "🍷",
+                funFact: "180 יום! חצי שנה של משתה - ואחריו עוד משתה של 7 ימים"
+            },
+            {
+                question: "מה היה שם אביו של המן?",
+                answers: ["המדתא", "אגג", "עמלק", "שמשי"],
+                correct: 0,
+                emoji: "📛",
+                funFact: "המן בן המדתא האגגי - מצאצאי אגג מלך עמלק"
+            },
+            {
+                question: "כמה בנים היו להמן?",
+                answers: ["5", "7", "10", "12"],
+                correct: 2,
+                emoji: "👨‍👦‍👦",
+                funFact: "להמן היו 10 בנים, ושמותיהם נקראים בנשימה אחת במגילה!"
+            },
+            {
+                question: "מה גובה העץ שהמן הכין למרדכי?",
+                answers: ["20 אמה", "30 אמה", "50 אמה", "70 אמה"],
+                correct: 2,
+                emoji: "🌳",
+                funFact: "50 אמה - כ-25 מטר! בסוף המן עצמו נתלה על העץ"
+            },
+            {
+                question: "מי הציע להמן להכין את העץ למרדכי?",
+                answers: ["אחשוורוש", "זרש אשתו", "חרבונה", "ממוכן"],
+                correct: 1,
+                emoji: "🗣️",
+                funFact: "זרש אשתו ואוהביו יעצו לו - אבל בסוף הם גם אמרו לו שייפול!"
+            },
+            {
+                question: "איזו מצווה מיוחדת מקיימים בפורים כלפי עניים?",
+                answers: ["הלוואה", "מתנות לאביונים", "ביקור חולים", "הכנסת אורחים"],
+                correct: 1,
+                emoji: "🤲",
+                funFact: "חייבים לתת לפחות לשני אביונים - כדי שגם הם ישמחו בפורים!"
+            },
+            {
+                question: "מה שם הסריס שהציל את המלך וסיפר על כך למרדכי?",
+                answers: ["בגתן ותרש", "חרבונה", "ממוכן", "התך"],
+                correct: 3,
+                emoji: "🕵️",
+                funFact: "התך (שלפי חז\"ל הוא דניאל) היה הסריס שתיווך בין אסתר למרדכי"
+            },
+            {
+                question: "באיזה חודש עברי חל פורים?",
+                answers: ["ניסן", "אדר", "תשרי", "שבט"],
+                correct: 1,
+                emoji: "📅",
+                funFact: "משנכנס אדר מרבים בשמחה! המן הפיל פור על חודש אדר"
+            },
+            {
+                question: "מה שם הצום שצמים לפני פורים?",
+                answers: ["צום גדליה", "תענית אסתר", "צום תמוז", "תענית בכורות"],
+                correct: 1,
+                emoji: "🕯️",
+                funFact: "צמים בי\"ג באדר - זכר לצום שצמה אסתר לפני שנכנסה למלך"
+            }
+        ];
+
+        let currentQuestions = [];
         let currentQuestion = 0;
         let score = 0;
         let answered = false;
+        let currentLevel = 'easy';
 
-        function startQuiz() {
+        function startQuiz(level) {
+            currentLevel = level;
+            currentQuestions = level === 'easy' ? easyQuestions : hardQuestions;
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('quizContent').style.display = 'block';
+
+            const badge = document.getElementById('difficultyBadge');
+            if (level === 'hard') {
+                badge.textContent = '🔥 רמה מתקדמת';
+                badge.className = 'difficulty-badge hard';
+            } else {
+                badge.textContent = '🌟 רמה רגילה';
+                badge.className = 'difficulty-badge';
+            }
+
             currentQuestion = 0;
             score = 0;
             showQuestion();
         }
 
         function showQuestion() {
-            const q = questions[currentQuestion];
+            const q = currentQuestions[currentQuestion];
             document.getElementById('questionEmoji').textContent = q.emoji;
-            document.getElementById('questionNumber').textContent = `שאלה ${currentQuestion + 1} מתוך ${questions.length}`;
+            document.getElementById('questionNumber').textContent = `שאלה ${currentQuestion + 1} מתוך ${currentQuestions.length}`;
             document.getElementById('questionText').textContent = q.question;
-            document.getElementById('progressFill').style.width = `${(currentQuestion / questions.length) * 100}%`;
+            document.getElementById('progressFill').style.width = `${(currentQuestion / currentQuestions.length) * 100}%`;
             document.getElementById('feedback').textContent = '';
             document.getElementById('feedback').className = 'feedback';
             document.getElementById('nextBtn').style.display = 'none';
@@ -406,13 +539,16 @@
                 btn.onclick = () => checkAnswer(index, btn);
                 container.appendChild(btn);
             });
+
+            // Scroll to top of quiz
+            document.querySelector('.quiz-container').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
         function checkAnswer(index, btn) {
             if (answered) return;
             answered = true;
 
-            const q = questions[currentQuestion];
+            const q = currentQuestions[currentQuestion];
             const buttons = document.querySelectorAll('.answer-btn');
             const feedback = document.getElementById('feedback');
 
@@ -431,18 +567,23 @@
                 feedback.className = 'feedback wrong';
             }
 
-            if (currentQuestion < questions.length - 1) {
-                document.getElementById('nextBtn').style.display = 'inline-block';
+            const nextBtn = document.getElementById('nextBtn');
+            if (currentQuestion < currentQuestions.length - 1) {
+                nextBtn.textContent = 'השאלה הבאה ➜';
             } else {
-                document.getElementById('nextBtn').textContent = '🏆 לתוצאות';
-                document.getElementById('nextBtn').style.display = 'inline-block';
+                nextBtn.textContent = '🏆 לתוצאות';
             }
+            nextBtn.style.display = 'inline-block';
+
+            // Auto-scroll so the next button is visible
+            setTimeout(() => {
+                nextBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 300);
         }
 
         function nextQuestion() {
             currentQuestion++;
-            if (currentQuestion < questions.length) {
-                document.getElementById('nextBtn').textContent = 'השאלה הבאה ➜';
+            if (currentQuestion < currentQuestions.length) {
                 showQuestion();
             } else {
                 showResults();
@@ -453,12 +594,12 @@
             document.getElementById('quizContent').style.display = 'none';
             document.getElementById('resultScreen').style.display = 'block';
 
-            const percentage = Math.round((score / questions.length) * 100);
-            document.getElementById('resultScore').textContent = `${score} / ${questions.length}`;
+            const percentage = Math.round((score / currentQuestions.length) * 100);
+            document.getElementById('resultScore').textContent = `${score} / ${currentQuestions.length}`;
 
             // Stars
             const starsContainer = document.getElementById('stars');
-            const starCount = Math.round((score / questions.length) * 5);
+            const starCount = Math.round((score / currentQuestions.length) * 5);
             let starsHTML = '';
             for (let i = 0; i < 5; i++) {
                 starsHTML += `<span class="star ${i < starCount ? '' : 'empty'}">⭐</span>`;
@@ -468,7 +609,9 @@
             let emoji, message;
             if (percentage === 100) {
                 emoji = "🏆🎉👑";
-                message = "מושלם! אתם מלכים ומלכות של פורים!";
+                message = currentLevel === 'hard'
+                    ? "מושלם! אתם מומחי פורים אמיתיים!"
+                    : "מושלם! אתם מלכים ומלכות של פורים!";
                 launchConfetti();
                 setTimeout(launchConfetti, 500);
                 setTimeout(launchConfetti, 1000);
