@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>משחק זיכרון פורים</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 700px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+
+        .emoji-header {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #764ba2;
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        /* Difficulty Selection */
+        .difficulty-select {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .diff-btn {
+            background: #f8f8ff;
+            border: 3px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 14px 24px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            color: #333;
+        }
+
+        .diff-btn:hover {
+            border-color: #764ba2;
+            background: #f0ebff;
+            transform: scale(1.05);
+        }
+
+        .diff-btn.active {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 50px;
+            font-size: 1.3em;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 25px rgba(118, 75, 162, 0.4);
+        }
+
+        /* Game Info Bar */
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 16px;
+            background: #f8f8ff;
+            border-radius: 12px;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+        .game-info span {
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        /* Card Grid */
+        .card-grid {
+            display: grid;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .card-grid.grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .card-grid.grid-5 {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .card-grid.grid-6 {
+            grid-template-columns: repeat(6, 1fr);
+        }
+
+        .card {
+            aspect-ratio: 1;
+            border-radius: 14px;
+            cursor: pointer;
+            perspective: 600px;
+            position: relative;
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.5s ease;
+            border-radius: 14px;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card.matched .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card.matched {
+            animation: matchPop 0.5s ease;
+        }
+
+        @keyframes matchPop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.2em;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: 3px solid #5a3d8a;
+        }
+
+        .card-front::after {
+            content: '🎭';
+            font-size: 1em;
+        }
+
+        .card-back {
+            background: #fff;
+            border: 3px solid #e0e0e0;
+            transform: rotateY(180deg);
+        }
+
+        .card.matched .card-back {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .card-back .card-emoji {
+            font-size: 1em;
+            line-height: 1;
+        }
+
+        .card-back .card-label {
+            font-size: 0.35em;
+            color: #555;
+            margin-top: 4px;
+        }
+
+        .card:not(.flipped):not(.matched):hover .card-inner {
+            transform: rotateY(15deg);
+        }
+
+        /* Result */
+        .result-container {
+            display: none;
+        }
+
+        .result-emoji {
+            font-size: 72px;
+            margin-bottom: 15px;
+        }
+
+        .result-score {
+            font-size: 2em;
+            color: #764ba2;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .result-message {
+            font-size: 1.3em;
+            color: #555;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.4);
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 18px;
+            color: #764ba2;
+            font-size: 1.1em;
+            text-decoration: none;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Confetti */
+        .confetti {
+            position: fixed;
+            top: -10px;
+            font-size: 24px;
+            animation: fall linear forwards;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 500px) {
+            .game-container {
+                padding: 18px;
+            }
+            .card-face {
+                font-size: 1.6em;
+            }
+            .card-grid {
+                gap: 7px;
+            }
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Start Screen -->
+        <div id="startScreen">
+            <div class="emoji-header">🃏🧠✨</div>
+            <h1>משחק זיכרון פורים</h1>
+            <p class="subtitle">מצאו את הזוגות של סמלי הפורים!</p>
+
+            <p style="color:#555; margin-bottom:12px; font-size:1.05em;">בחרו רמת קושי:</p>
+            <div class="difficulty-select">
+                <button class="diff-btn active" onclick="selectDifficulty(this, 'easy')">
+                    😊 מתחיל<br><small>8 קלפים</small>
+                </button>
+                <button class="diff-btn" onclick="selectDifficulty(this, 'medium')">
+                    🤔 מתקדם<br><small>12 קלפים</small>
+                </button>
+                <button class="diff-btn" onclick="selectDifficulty(this, 'hard')">
+                    🔥 קשה<br><small>20 קלפים</small>
+                </button>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">!יאללה, מתחילים</button>
+        </div>
+
+        <!-- Game Screen -->
+        <div id="gameScreen" style="display:none;">
+            <div class="game-info">
+                <div>מהלכים: <span id="moveCount">0</span></div>
+                <div>זוגות: <span id="matchCount">0</span> / <span id="totalPairs">0</span></div>
+            </div>
+            <div class="card-grid" id="cardGrid"></div>
+        </div>
+
+        <!-- Result Screen -->
+        <div class="result-container" id="resultScreen">
+            <div class="result-emoji">🏆🎉</div>
+            <div class="result-score" id="resultText"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <div class="btn-group">
+                <button class="restart-btn" onclick="backToMenu()">🔄 שחקו שוב</button>
+            </div>
+            <a href="index.html" class="back-link">🎭 לחידון פורים ←</a>
+        </div>
+    </div>
+
+    <script>
+        // All Purim symbols + kids' names
+        const allSymbols = [
+            { emoji: '🔺', label: 'אוזן המן' },
+            { emoji: '📯', label: 'רעשן' },
+            { emoji: '📜', label: 'מגילה' },
+            { emoji: '👑', label: 'כתר' },
+            { emoji: '🎭', label: 'תחפושת' },
+            { emoji: '🎁', label: 'משלוח מנות' },
+            { emoji: '🍷', label: 'יין' },
+            { emoji: '🤡', label: 'ליצן' },
+            { emoji: '🏰', label: 'ארמון' },
+            { emoji: '⭐', label: 'שלו' },
+            { emoji: '🌸', label: 'נגה' },
+            { emoji: '🦁', label: 'דור' },
+        ];
+
+        const difficulties = {
+            easy:   { pairs: 4,  gridClass: 'grid-4' },
+            medium: { pairs: 6,  gridClass: 'grid-4' },
+            hard:   { pairs: 10, gridClass: 'grid-5' },
+        };
+
+        let selectedDifficulty = 'easy';
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let totalPairs = 0;
+        let moves = 0;
+        let lockBoard = false;
+
+        function selectDifficulty(btn, diff) {
+            document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            selectedDifficulty = diff;
+        }
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startGame() {
+            const config = difficulties[selectedDifficulty];
+            totalPairs = config.pairs;
+            matchedPairs = 0;
+            moves = 0;
+            flippedCards = [];
+            lockBoard = false;
+
+            // Pick random symbols for this game
+            const shuffledSymbols = shuffle([...allSymbols]);
+            const selectedSymbols = shuffledSymbols.slice(0, totalPairs);
+
+            // Create pairs
+            cards = [];
+            selectedSymbols.forEach((sym, idx) => {
+                cards.push({ id: idx * 2, symbolId: idx, ...sym });
+                cards.push({ id: idx * 2 + 1, symbolId: idx, ...sym });
+            });
+            shuffle(cards);
+
+            // Update UI
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('moveCount').textContent = '0';
+            document.getElementById('matchCount').textContent = '0';
+            document.getElementById('totalPairs').textContent = totalPairs;
+
+            // Build grid
+            const grid = document.getElementById('cardGrid');
+            grid.innerHTML = '';
+            grid.className = 'card-grid ' + config.gridClass;
+
+            cards.forEach((card, index) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card';
+                cardEl.dataset.index = index;
+                cardEl.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-face card-front"></div>
+                        <div class="card-face card-back">
+                            <span class="card-emoji">${card.emoji}</span>
+                            <span class="card-label">${card.label}</span>
+                        </div>
+                    </div>
+                `;
+                cardEl.addEventListener('click', () => flipCard(cardEl, index));
+                grid.appendChild(cardEl);
+            });
+        }
+
+        function flipCard(cardEl, index) {
+            if (lockBoard) return;
+            if (cardEl.classList.contains('flipped') || cardEl.classList.contains('matched')) return;
+            if (flippedCards.length >= 2) return;
+
+            cardEl.classList.add('flipped');
+            flippedCards.push({ el: cardEl, index });
+
+            if (flippedCards.length === 2) {
+                moves++;
+                document.getElementById('moveCount').textContent = moves;
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [first, second] = flippedCards;
+            const card1 = cards[first.index];
+            const card2 = cards[second.index];
+
+            if (card1.symbolId === card2.symbolId) {
+                // Match!
+                lockBoard = true;
+                setTimeout(() => {
+                    first.el.classList.add('matched');
+                    second.el.classList.add('matched');
+                    matchedPairs++;
+                    document.getElementById('matchCount').textContent = matchedPairs;
+                    flippedCards = [];
+                    lockBoard = false;
+
+                    if (matchedPairs === totalPairs) {
+                        setTimeout(showResult, 600);
+                    }
+                }, 500);
+            } else {
+                // No match
+                lockBoard = true;
+                setTimeout(() => {
+                    first.el.classList.remove('flipped');
+                    second.el.classList.remove('flipped');
+                    flippedCards = [];
+                    lockBoard = false;
+                }, 900);
+            }
+        }
+
+        function showResult() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'block';
+
+            const diffLabel = {
+                easy: 'מתחיל',
+                medium: 'מתקדם',
+                hard: 'קשה'
+            };
+
+            document.getElementById('resultText').textContent = `סיימתם ב-${moves} מהלכים!`;
+
+            let message;
+            const ratio = moves / totalPairs;
+            if (ratio <= 1.5) {
+                message = 'וואו! זיכרון מדהים! 🧠✨';
+            } else if (ratio <= 2.5) {
+                message = 'כל הכבוד! זיכרון מעולה! 🌟';
+            } else if (ratio <= 3.5) {
+                message = 'יפה מאוד! נסו לשפר בפעם הבאה! 😊';
+            } else {
+                message = 'לא רע! תרגול עושה מושלם! 💪';
+            }
+            message += `\nרמה: ${diffLabel[selectedDifficulty]} (${totalPairs} זוגות)`;
+
+            document.getElementById('resultMessage').textContent = message;
+
+            launchConfetti();
+            setTimeout(launchConfetti, 500);
+        }
+
+        function backToMenu() {
+            document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'block';
+        }
+
+        function launchConfetti() {
+            const emojis = ['🎉', '✨', '🎊', '⭐', '🌟', '🎭', '👑', '💜'];
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 80);
+            }
+        }
+    </script>
+</body>
+</html>
