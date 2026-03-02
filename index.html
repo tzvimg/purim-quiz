@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חידון פורים לילדים</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .confetti {
+            position: fixed;
+            top: -10px;
+            font-size: 24px;
+            animation: fall linear forwards;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .emoji-header {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #764ba2;
+            font-size: 2em;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #888;
+            font-size: 1.1em;
+            margin-bottom: 30px;
+        }
+
+        .progress-bar {
+            background: #eee;
+            border-radius: 20px;
+            height: 14px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.5s ease;
+        }
+
+        .question-number {
+            color: #764ba2;
+            font-size: 0.95em;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .question {
+            font-size: 1.4em;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .answers {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .answer-btn {
+            background: #f8f8ff;
+            border: 3px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 16px 20px;
+            font-size: 1.15em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            color: #333;
+            text-align: right;
+        }
+
+        .answer-btn:hover {
+            border-color: #764ba2;
+            background: #f0ebff;
+            transform: scale(1.02);
+        }
+
+        .answer-btn.correct {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+            animation: pop 0.4s ease;
+        }
+
+        .answer-btn.wrong {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+            animation: shake 0.5s ease;
+        }
+
+        .answer-btn:disabled {
+            cursor: default;
+            transform: none;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            min-height: 40px;
+        }
+
+        .feedback.correct {
+            color: #28a745;
+        }
+
+        .feedback.wrong {
+            color: #dc3545;
+        }
+
+        .next-btn {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 40px;
+            font-size: 1.15em;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: none;
+        }
+
+        .next-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.4);
+        }
+
+        .result-container {
+            display: none;
+        }
+
+        .result-emoji {
+            font-size: 72px;
+            margin-bottom: 15px;
+        }
+
+        .result-score {
+            font-size: 2.5em;
+            color: #764ba2;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .result-message {
+            font-size: 1.3em;
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .restart-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 14px 40px;
+            font-size: 1.15em;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .restart-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(118, 75, 162, 0.4);
+        }
+
+        .start-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 16px 50px;
+            font-size: 1.3em;
+            cursor: pointer;
+            font-family: inherit;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-top: 10px;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 25px rgba(118, 75, 162, 0.4);
+        }
+
+        .quiz-content {
+            display: none;
+        }
+
+        .star {
+            display: inline-block;
+            font-size: 32px;
+            margin: 0 2px;
+        }
+
+        .star.empty {
+            opacity: 0.2;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <!-- Start Screen -->
+        <div class="start-container" id="startScreen">
+            <div class="emoji-header">🎭🤡👑</div>
+            <h1>חידון פורים</h1>
+            <p class="subtitle">10 שאלות על חג הפורים - בואו נראה כמה אתם יודעים!</p>
+            <button class="start-btn" onclick="startQuiz()">!יאללה, מתחילים</button>
+        </div>
+
+        <!-- Quiz Content -->
+        <div class="quiz-content" id="quizContent">
+            <div class="emoji-header" id="questionEmoji">🎭</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="question-number" id="questionNumber"></div>
+            <div class="question" id="questionText"></div>
+            <div class="answers" id="answersContainer"></div>
+            <div class="feedback" id="feedback"></div>
+            <button class="next-btn" id="nextBtn" onclick="nextQuestion()">השאלה הבאה ➜</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div class="result-container" id="resultScreen">
+            <div class="result-emoji" id="resultEmoji"></div>
+            <div class="result-score" id="resultScore"></div>
+            <div id="stars"></div>
+            <div class="result-message" id="resultMessage"></div>
+            <button class="restart-btn" onclick="restartQuiz()">🔄 שחקו שוב</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "מי היתה המלכה שסירבה לבוא למשתה המלך?",
+                answers: ["אסתר", "ושתי", "מרים", "רות"],
+                correct: 1,
+                emoji: "👑",
+                funFact: "ושתי סירבה להגיע ולכן המלך חיפש מלכה חדשה!"
+            },
+            {
+                question: "מה שמו של הרשע במגילת אסתר?",
+                answers: ["פרעה", "המן", "גוליית", "נבוכדנצר"],
+                correct: 1,
+                emoji: "😠",
+                funFact: "כשאומרים את שם המן - משמיעים רעש עם הרעשן!"
+            },
+            {
+                question: "מי היה דוד של אסתר המלכה?",
+                answers: ["המן", "אחשוורוש", "מרדכי", "דניאל"],
+                correct: 2,
+                emoji: "👨‍👧",
+                funFact: "מרדכי גידל את אסתר כבתו לאחר שהוריה נפטרו"
+            },
+            {
+                question: "מה שמו של המלך במגילת אסתר?",
+                answers: ["שלמה", "דוד", "אחשוורוש", "שאול"],
+                correct: 2,
+                emoji: "🤴",
+                funFact: "אחשוורוש מלך על 127 מדינות!"
+            },
+            {
+                question: "מה שולחים בפורים לחברים?",
+                answers: ["מכתבים", "משלוח מנות", "פרחים", "בלונים"],
+                correct: 1,
+                emoji: "🎁",
+                funFact: "חייבים לשלוח לפחות שני סוגי מאכל לחבר אחד"
+            },
+            {
+                question: "איזה עוגה מיוחדת אוכלים בפורים?",
+                answers: ["עוגת שוקולד", "סופגנייה", "אוזני המן", "עוגת גבינה"],
+                correct: 2,
+                emoji: "🥟",
+                funFact: "אוזני המן ממולאות בפרג, שוקולד, חלבה ועוד!"
+            },
+            {
+                question: "מה קוראים בבית הכנסת בפורים?",
+                answers: ["ספר תהילים", "מגילת אסתר", "ספר בראשית", "מגילת רות"],
+                correct: 1,
+                emoji: "📜",
+                funFact: "קוראים את המגילה פעמיים - בערב ובבוקר!"
+            },
+            {
+                question: "מה עושים כשאומרים את שם המן בקריאת המגילה?",
+                answers: ["מוחאים כפיים", "קופצים", "משמיעים רעש עם רעשנים", "שרים"],
+                correct: 2,
+                emoji: "📢",
+                funFact: "המנהג הוא למחות את שם המן - לכן משמיעים רעש!"
+            },
+            {
+                question: "מה נוהגים ללבוש בפורים?",
+                answers: ["בגדים לבנים", "תחפושות", "כובעים", "צעיפים"],
+                correct: 1,
+                emoji: "🎭",
+                funFact: "המנהג קשור לכך שאסתר הסתירה את זהותה!"
+            },
+            {
+                question: "באיזו עיר התרחש סיפור מגילת אסתר?",
+                answers: ["ירושלים", "בבל", "שושן הבירה", "מצרים"],
+                correct: 2,
+                emoji: "🏰",
+                funFact: "שושן הבירה היתה בירת האימפריה הפרסית"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        function startQuiz() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('quizContent').style.display = 'block';
+            currentQuestion = 0;
+            score = 0;
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionEmoji').textContent = q.emoji;
+            document.getElementById('questionNumber').textContent = `שאלה ${currentQuestion + 1} מתוך ${questions.length}`;
+            document.getElementById('questionText').textContent = q.question;
+            document.getElementById('progressFill').style.width = `${(currentQuestion / questions.length) * 100}%`;
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('nextBtn').style.display = 'none';
+            answered = false;
+
+            const container = document.getElementById('answersContainer');
+            container.innerHTML = '';
+
+            q.answers.forEach((answer, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'answer-btn';
+                btn.textContent = answer;
+                btn.onclick = () => checkAnswer(index, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(index, btn) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const buttons = document.querySelectorAll('.answer-btn');
+            const feedback = document.getElementById('feedback');
+
+            buttons.forEach(b => b.disabled = true);
+
+            if (index === q.correct) {
+                score++;
+                btn.classList.add('correct');
+                feedback.textContent = `✅ נכון מאוד! ${q.funFact}`;
+                feedback.className = 'feedback correct';
+                launchConfetti();
+            } else {
+                btn.classList.add('wrong');
+                buttons[q.correct].classList.add('correct');
+                feedback.textContent = `❌ לא נורא! ${q.funFact}`;
+                feedback.className = 'feedback wrong';
+            }
+
+            if (currentQuestion < questions.length - 1) {
+                document.getElementById('nextBtn').style.display = 'inline-block';
+            } else {
+                document.getElementById('nextBtn').textContent = '🏆 לתוצאות';
+                document.getElementById('nextBtn').style.display = 'inline-block';
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                document.getElementById('nextBtn').textContent = 'השאלה הבאה ➜';
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quizContent').style.display = 'none';
+            document.getElementById('resultScreen').style.display = 'block';
+
+            const percentage = Math.round((score / questions.length) * 100);
+            document.getElementById('resultScore').textContent = `${score} / ${questions.length}`;
+
+            // Stars
+            const starsContainer = document.getElementById('stars');
+            const starCount = Math.round((score / questions.length) * 5);
+            let starsHTML = '';
+            for (let i = 0; i < 5; i++) {
+                starsHTML += `<span class="star ${i < starCount ? '' : 'empty'}">⭐</span>`;
+            }
+            starsContainer.innerHTML = starsHTML;
+
+            let emoji, message;
+            if (percentage === 100) {
+                emoji = "🏆🎉👑";
+                message = "מושלם! אתם מלכים ומלכות של פורים!";
+                launchConfetti();
+                setTimeout(launchConfetti, 500);
+                setTimeout(launchConfetti, 1000);
+            } else if (percentage >= 80) {
+                emoji = "🌟😃";
+                message = "כל הכבוד! אתם ממש מכירים את סיפור הפורים!";
+                launchConfetti();
+            } else if (percentage >= 60) {
+                emoji = "😊👍";
+                message = "יפה מאוד! עוד קצת ואתם מומחי פורים!";
+            } else if (percentage >= 40) {
+                emoji = "🤔📖";
+                message = "לא רע! כדאי לקרוא שוב את מגילת אסתר!";
+            } else {
+                emoji = "📚🎭";
+                message = "בואו נלמד עוד על פורים ונשחק שוב!";
+            }
+
+            document.getElementById('resultEmoji').textContent = emoji;
+            document.getElementById('resultMessage').textContent = message;
+        }
+
+        function restartQuiz() {
+            document.getElementById('resultScreen').style.display = 'none';
+            document.getElementById('startScreen').style.display = 'flex';
+        }
+
+        function launchConfetti() {
+            const emojis = ['🎉', '✨', '🎊', '⭐', '🌟', '🎭', '👑', '💜'];
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 80);
+            }
+        }
+    </script>
+</body>
+</html>
