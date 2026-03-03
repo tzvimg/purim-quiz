@@ -25,7 +25,7 @@
             background: white;
             border-radius: 24px;
             padding: 30px;
-            max-width: 700px;
+            max-width: 750px;
             width: 100%;
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             text-align: center;
@@ -81,6 +81,63 @@
             color: white;
         }
 
+        /* Player Selection */
+        .player-select {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .player-btn {
+            background: #f8f8ff;
+            border: 3px solid #e0e0e0;
+            border-radius: 16px;
+            padding: 12px 22px;
+            font-size: 1.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            color: #333;
+        }
+
+        .player-btn:hover {
+            border-color: #667eea;
+            background: #e8f0ff;
+            transform: scale(1.05);
+        }
+
+        .player-btn.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea, #5a67d8);
+            color: white;
+        }
+
+        .player-names {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .player-names input {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 1em;
+            font-family: inherit;
+            text-align: center;
+            width: 140px;
+            transition: border-color 0.3s;
+        }
+
+        .player-names input:focus {
+            outline: none;
+            border-color: #764ba2;
+        }
+
         .start-btn {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
@@ -104,17 +161,78 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             padding: 10px 16px;
             background: #f8f8ff;
             border-radius: 12px;
             font-size: 1.1em;
             color: #555;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .game-info span {
             font-weight: bold;
             color: #764ba2;
+        }
+
+        /* Player Scoreboard */
+        .scoreboard {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .player-score {
+            border: 3px solid #e0e0e0;
+            border-radius: 14px;
+            padding: 10px 18px;
+            font-size: 1em;
+            background: #f8f8ff;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .player-score.current-turn {
+            border-color: #764ba2;
+            background: linear-gradient(135deg, #f0ebff, #e8e0ff);
+            box-shadow: 0 4px 15px rgba(118, 75, 162, 0.3);
+            transform: scale(1.05);
+        }
+
+        .player-score .player-name {
+            font-weight: bold;
+            color: #764ba2;
+            font-size: 1.05em;
+        }
+
+        .player-score .player-pairs {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 2px;
+        }
+
+        .player-colors {
+            --p1: #764ba2;
+            --p2: #e67e22;
+            --p3: #27ae60;
+        }
+
+        .player-score[data-player="0"] .player-name { color: var(--p1); }
+        .player-score[data-player="0"].current-turn { border-color: var(--p1); }
+        .player-score[data-player="1"] .player-name { color: var(--p2); }
+        .player-score[data-player="1"].current-turn { border-color: var(--p2); }
+        .player-score[data-player="2"] .player-name { color: var(--p3); }
+        .player-score[data-player="2"].current-turn { border-color: var(--p3); }
+
+        .turn-indicator {
+            font-size: 1.15em;
+            color: #764ba2;
+            font-weight: bold;
+            margin-bottom: 12px;
+            min-height: 1.4em;
         }
 
         /* Card Grid */
@@ -207,6 +325,19 @@
             background: #d4edda;
         }
 
+        .card.matched[data-matched-by="0"] .card-back {
+            border-color: var(--p1);
+            background: #f0ebff;
+        }
+        .card.matched[data-matched-by="1"] .card-back {
+            border-color: var(--p2);
+            background: #fef3e8;
+        }
+        .card.matched[data-matched-by="2"] .card-back {
+            border-color: var(--p3);
+            background: #e8f8e8;
+        }
+
         .card-back .card-emoji {
             font-size: 1em;
             line-height: 1;
@@ -244,6 +375,31 @@
             color: #555;
             margin-bottom: 25px;
             line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        .result-table {
+            margin: 15px auto;
+            text-align: right;
+        }
+
+        .result-table .result-row {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            padding: 8px 16px;
+            font-size: 1.15em;
+            border-radius: 10px;
+            margin-bottom: 6px;
+        }
+
+        .result-table .result-row.winner {
+            background: linear-gradient(135deg, #ffd700, #ffec80);
+            font-weight: bold;
+        }
+
+        .result-table .result-row .result-name {
+            min-width: 80px;
         }
 
         .btn-group {
@@ -313,11 +469,15 @@
             h1 {
                 font-size: 1.5em;
             }
+            .diff-btn {
+                padding: 10px 16px;
+                font-size: 0.95em;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
+    <div class="game-container player-colors">
         <!-- Start Screen -->
         <div id="startScreen">
             <div class="emoji-header">🃏🧠✨</div>
@@ -335,6 +495,25 @@
                 <button class="diff-btn" onclick="selectDifficulty(this, 'hard')">
                     🔥 קשה<br><small>20 קלפים</small>
                 </button>
+                <button class="diff-btn" onclick="selectDifficulty(this, 'veryhard')">
+                    💀 קשה מאוד<br><small>26 קלפים</small>
+                </button>
+            </div>
+
+            <p style="color:#555; margin-bottom:12px; font-size:1.05em;">מספר שחקנים:</p>
+            <div class="player-select">
+                <button class="player-btn active" onclick="selectPlayers(this, 1)">
+                    👤 שחקן אחד
+                </button>
+                <button class="player-btn" onclick="selectPlayers(this, 2)">
+                    👥 שני שחקנים
+                </button>
+                <button class="player-btn" onclick="selectPlayers(this, 3)">
+                    👥👤 שלושה שחקנים
+                </button>
+            </div>
+
+            <div class="player-names" id="playerNamesContainer">
             </div>
 
             <button class="start-btn" onclick="startGame()">!יאללה, מתחילים</button>
@@ -342,6 +521,8 @@
 
         <!-- Game Screen -->
         <div id="gameScreen" style="display:none;">
+            <div class="turn-indicator" id="turnIndicator"></div>
+            <div class="scoreboard" id="scoreboard"></div>
             <div class="game-info">
                 <div>מהלכים: <span id="moveCount">0</span></div>
                 <div>זוגות: <span id="matchCount">0</span> / <span id="totalPairs">0</span></div>
@@ -354,6 +535,7 @@
             <div class="result-emoji">🏆🎉</div>
             <div class="result-score" id="resultText"></div>
             <div class="result-message" id="resultMessage"></div>
+            <div class="result-table" id="resultTable"></div>
             <div class="btn-group">
                 <button class="restart-btn" onclick="backToMenu()">🔄 שחקו שוב</button>
             </div>
@@ -376,15 +558,20 @@
             { emoji: '⭐', label: 'שלו' },
             { emoji: '🌸', label: 'נגה' },
             { emoji: '🦁', label: 'דור' },
+            { emoji: '🌈', label: 'יזהר' },
         ];
 
         const difficulties = {
-            easy:   { pairs: 4,  gridClass: 'grid-4' },
-            medium: { pairs: 6,  gridClass: 'grid-4' },
-            hard:   { pairs: 10, gridClass: 'grid-5' },
+            easy:     { pairs: 4,  gridClass: 'grid-4' },
+            medium:   { pairs: 6,  gridClass: 'grid-4' },
+            hard:     { pairs: 10, gridClass: 'grid-5' },
+            veryhard: { pairs: 13, gridClass: 'grid-6' },
         };
 
         let selectedDifficulty = 'easy';
+        let numPlayers = 1;
+        let players = [];
+        let currentPlayer = 0;
         let cards = [];
         let flippedCards = [];
         let matchedPairs = 0;
@@ -396,6 +583,26 @@
             document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             selectedDifficulty = diff;
+        }
+
+        function selectPlayers(btn, count) {
+            document.querySelectorAll('.player-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            numPlayers = count;
+            renderPlayerNames();
+        }
+
+        function renderPlayerNames() {
+            const container = document.getElementById('playerNamesContainer');
+            if (numPlayers === 1) {
+                container.innerHTML = '';
+                return;
+            }
+            let html = '';
+            for (let i = 0; i < numPlayers; i++) {
+                html += `<input type="text" id="playerName${i}" placeholder="שם שחקן ${i + 1}" maxlength="15">`;
+            }
+            container.innerHTML = html;
         }
 
         function shuffle(array) {
@@ -413,6 +620,15 @@
             moves = 0;
             flippedCards = [];
             lockBoard = false;
+            currentPlayer = 0;
+
+            // Setup players
+            players = [];
+            for (let i = 0; i < numPlayers; i++) {
+                const nameInput = document.getElementById(`playerName${i}`);
+                const name = (nameInput && nameInput.value.trim()) || `שחקן ${i + 1}`;
+                players.push({ name, pairs: 0 });
+            }
 
             // Pick random symbols for this game
             const shuffledSymbols = shuffle([...allSymbols]);
@@ -433,6 +649,10 @@
             document.getElementById('moveCount').textContent = '0';
             document.getElementById('matchCount').textContent = '0';
             document.getElementById('totalPairs').textContent = totalPairs;
+
+            // Setup scoreboard
+            updateScoreboard();
+            updateTurnIndicator();
 
             // Build grid
             const grid = document.getElementById('cardGrid');
@@ -455,6 +675,29 @@
                 cardEl.addEventListener('click', () => flipCard(cardEl, index));
                 grid.appendChild(cardEl);
             });
+        }
+
+        function updateScoreboard() {
+            const scoreboard = document.getElementById('scoreboard');
+            if (numPlayers === 1) {
+                scoreboard.innerHTML = '';
+                return;
+            }
+            scoreboard.innerHTML = players.map((p, i) =>
+                `<div class="player-score ${i === currentPlayer ? 'current-turn' : ''}" data-player="${i}">
+                    <div class="player-name">${p.name}</div>
+                    <div class="player-pairs">${p.pairs} זוגות</div>
+                </div>`
+            ).join('');
+        }
+
+        function updateTurnIndicator() {
+            const indicator = document.getElementById('turnIndicator');
+            if (numPlayers === 1) {
+                indicator.textContent = '';
+                return;
+            }
+            indicator.textContent = `🎯 התור של ${players[currentPlayer].name}`;
         }
 
         function flipCard(cardEl, index) {
@@ -483,23 +726,39 @@
                 setTimeout(() => {
                     first.el.classList.add('matched');
                     second.el.classList.add('matched');
+
+                    if (numPlayers > 1) {
+                        first.el.dataset.matchedBy = currentPlayer;
+                        second.el.dataset.matchedBy = currentPlayer;
+                        players[currentPlayer].pairs++;
+                    }
+
                     matchedPairs++;
                     document.getElementById('matchCount').textContent = matchedPairs;
                     flippedCards = [];
                     lockBoard = false;
 
+                    updateScoreboard();
+
                     if (matchedPairs === totalPairs) {
                         setTimeout(showResult, 600);
                     }
+                    // On match, same player continues (no turn switch)
                 }, 500);
             } else {
-                // No match
+                // No match - switch turn in multiplayer
                 lockBoard = true;
                 setTimeout(() => {
                     first.el.classList.remove('flipped');
                     second.el.classList.remove('flipped');
                     flippedCards = [];
                     lockBoard = false;
+
+                    if (numPlayers > 1) {
+                        currentPlayer = (currentPlayer + 1) % numPlayers;
+                        updateScoreboard();
+                        updateTurnIndicator();
+                    }
                 }, 900);
             }
         }
@@ -511,25 +770,56 @@
             const diffLabel = {
                 easy: 'מתחיל',
                 medium: 'מתקדם',
-                hard: 'קשה'
+                hard: 'קשה',
+                veryhard: 'קשה מאוד'
             };
 
-            document.getElementById('resultText').textContent = `סיימתם ב-${moves} מהלכים!`;
+            const resultTable = document.getElementById('resultTable');
 
-            let message;
-            const ratio = moves / totalPairs;
-            if (ratio <= 1.5) {
-                message = 'וואו! זיכרון מדהים! 🧠✨';
-            } else if (ratio <= 2.5) {
-                message = 'כל הכבוד! זיכרון מעולה! 🌟';
-            } else if (ratio <= 3.5) {
-                message = 'יפה מאוד! נסו לשפר בפעם הבאה! 😊';
+            if (numPlayers === 1) {
+                document.getElementById('resultText').textContent = `סיימתם ב-${moves} מהלכים!`;
+
+                let message;
+                const ratio = moves / totalPairs;
+                if (ratio <= 1.5) {
+                    message = 'וואו! זיכרון מדהים! 🧠✨';
+                } else if (ratio <= 2.5) {
+                    message = 'כל הכבוד! זיכרון מעולה! 🌟';
+                } else if (ratio <= 3.5) {
+                    message = 'יפה מאוד! נסו לשפר בפעם הבאה! 😊';
+                } else {
+                    message = 'לא רע! תרגול עושה מושלם! 💪';
+                }
+                message += `\nרמה: ${diffLabel[selectedDifficulty]} (${totalPairs} זוגות)`;
+
+                document.getElementById('resultMessage').textContent = message;
+                resultTable.innerHTML = '';
             } else {
-                message = 'לא רע! תרגול עושה מושלם! 💪';
-            }
-            message += `\nרמה: ${diffLabel[selectedDifficulty]} (${totalPairs} זוגות)`;
+                // Multiplayer results
+                const sorted = players.map((p, i) => ({ ...p, idx: i }))
+                    .sort((a, b) => b.pairs - a.pairs);
+                const maxPairs = sorted[0].pairs;
+                const winners = sorted.filter(p => p.pairs === maxPairs);
 
-            document.getElementById('resultMessage').textContent = message;
+                if (winners.length > 1) {
+                    document.getElementById('resultText').textContent = 'תיקו! 🤝';
+                    document.getElementById('resultMessage').textContent =
+                        `${winners.map(w => w.name).join(' ו')} סיימו עם ${maxPairs} זוגות כל אחד!`;
+                } else {
+                    document.getElementById('resultText').textContent = `${winners[0].name} ניצח/ה! 🏆`;
+                    document.getElementById('resultMessage').textContent = `עם ${maxPairs} זוגות מתוך ${totalPairs}`;
+                }
+
+                const colorVars = ['var(--p1)', 'var(--p2)', 'var(--p3)'];
+                resultTable.innerHTML = sorted.map(p =>
+                    `<div class="result-row ${p.pairs === maxPairs ? 'winner' : ''}">
+                        <span class="result-name" style="color:${colorVars[p.idx]}">${p.name}</span>
+                        <span>${p.pairs} זוגות</span>
+                    </div>`
+                ).join('');
+
+                resultTable.innerHTML += `<div style="margin-top:10px;color:#888;font-size:0.95em">סה"כ ${moves} מהלכים · רמה: ${diffLabel[selectedDifficulty]}</div>`;
+            }
 
             launchConfetti();
             setTimeout(launchConfetti, 500);
